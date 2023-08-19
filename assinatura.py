@@ -47,4 +47,4 @@ for signed_attr in signed_attrs:
             signature_timestamp = signed_attr['values'][0].native
 
 nome = cert_chain[0].subject
-print(nome)
+print(signature_timestamp)
