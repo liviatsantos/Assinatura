@@ -15,8 +15,6 @@ with open('response.p7s', 'rb') as arquivo_p7s:
     p7s_bytes: bytes = arquivo_p7s.read()
     arquivo_p7s.close()
 
-cadeia_certificado = pkcs7.load_der_pkcs7_certificates(p7s_bytes)
-
 #conteudo da assinatura
 content_info: cms.ContentInfo = cms.ContentInfo.load(p7s_bytes)
 signed_data: cms.SignedData = content_info['content']
@@ -28,7 +26,7 @@ for signed_attr in signed_attrs:
         case 'signing_time':
             signature_timestamp = signed_attr['values'][0].native
 
-#faz leitura arquivo que foi assinado
+#faz leitura arquivo pdf
 with open('teste.pdf', 'rb') as arquivo_pdf:
     pdf_bytes = BytesIO(arquivo_pdf.read())
     arquivo_pdf.close()    
@@ -63,3 +61,4 @@ cms_writer.send(cms_bytes)
 #gera pdf assinado
 with open('teste_assinado.pdf', 'wb') as arquivo_assinado:
     arquivo_assinado.write(output.getbuffer())
+    arquivo_assinado.close
