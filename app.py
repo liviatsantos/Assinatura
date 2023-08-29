@@ -2,6 +2,7 @@ from requests_oauthlib import OAuth2Session
 from flask import Flask, request, redirect, session
 from flask.json import jsonify
 import os
+import requests
 from urllib.parse import urlparse,  parse_qs
 
 app = Flask(__name__)
@@ -27,10 +28,18 @@ def callback():
     url_code= urlparse(request.url)
     code = parse_qs(url_code.query)['code'][0]
 
-    token = oauth.fetch_token(token_url, client_secret=client_secret,
-                               code=code)
+    token = oauth.fetch_token(token_url, client_secret=client_secret, code=code)
     session['oauth_token'] = token
     return jsonify(token)
+
+@app.route("/certificado", methods=["GET"])
+def certificado():
+    url = 'https://assinatura-api.staging.iti.br/externo/v2/certificadoPublico'
+    at = session['oauth_token']
+    headers = {'Authorization': 'Bearer ' + at["access_token"]}
+   
+    r = requests.get(url, headers)
+    return r.text
 
 if __name__ == "__main__":
     # This allows us to use a plain HTTP callback
