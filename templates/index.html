@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+<title>Assinatura</title>
+</head>
+<body>
+    <div class="content">
+        <table>
+            <th>Componente de assinatura digital</th>
+            <tr>
+                {% if logado == True %}
+                <td>
+                   <a href="/certificado">certificado</a>
+                </td>
+                <td>
+                    <a href="/assinatura">assinatura</a>
+                </td>
+                {% else  %} 
+                <td>
+                    <a href="/login">Logar</a>
+                </td>
+                {% endif %}
+            </tr>
+        </table>
+    </div>
+    
+</body>
+
+</html>
