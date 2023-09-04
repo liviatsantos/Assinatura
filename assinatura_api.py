@@ -1,8 +1,8 @@
 import requests
 from requests_oauthlib import OAuth2Session
 
-cliente ='apptestegovbr'
-secret = 'lHbfJhktrIzQybBKvDAE'
+cliente =''
+secret = ''
 redirect_uri ='https://localhost:8080'
 scope = 'sign'
 response_type='code'
