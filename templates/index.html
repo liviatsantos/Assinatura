@@ -11,16 +11,40 @@
                 <td>
                    <a href="/certificado">certificado</a>
                 </td>
-                <td>
-                    <a href="/assinatura">assinatura</a>
-                </td>
                 {% else  %} 
                 <td>
                     <a href="/login">Logar</a>
                 </td>
                 {% endif %}
             </tr>
+            <tr>
+                <td>
+                    <form method=post enctype=multipart/form-data>
+                        <input type=file name=file>
+                      </form>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="/assinatura">Assinar Arquivo</a>
+                </td>
+            </tr>          
         </table>
+    </div>
+    <div class="content">
+        <table>
+            {% if assinado == True %}
+            <tr>
+                <td>
+                    <p>Arquivo Assinado!</p>
+                </td>
+                <td>
+                    <a href="/">voltar</a>
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+        
     </div>
     
 </body>

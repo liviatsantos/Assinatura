@@ -1,15 +1,17 @@
 from requests_oauthlib import OAuth2Session
-from flask import Flask, request, redirect, session, render_template
-from flask.json import jsonify
+from flask import Flask, request, redirect, session, render_template, flash
 import os
 import requests
 from urllib.parse import urlparse,  parse_qs
 import json
 
-app = Flask(__name__)
+UPLOAD_FOLDER = '/templates/'
 
-client_id = ""
-client_secret = ""
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+client_id = "apptestegovbr"
+client_secret = "lHbfJhktrIzQybBKvDAE"
 redirect_uri ='http://127.0.0.1:5000/callback'
 scope = 'sign'
 authorization_base_url = 'https://cas.staging.iti.br/oauth2.0/authorize'
@@ -52,13 +54,27 @@ def assinatura():
     headers = {'Content-Type': 'application/json', 'Authorization':'Bearer ' + at["access_token"]}
     response = requests.post(url, headers=headers, data=payload, stream=True)
     
-    #salva arquivo assinatura na pasta do projeto
     with open('response.p7s', 'wb') as arquivo_assinatura:
         arquivo_assinatura.write(response.raw.read())
         arquivo_assinatura.close
+    return render_template('index.html', assinado=True)
 
-    return response.text
-
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        else:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER']))
+        
 if __name__ == "__main__":
     # This allows us to use a plain HTTP callback
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"
