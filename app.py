@@ -11,8 +11,8 @@ TIPO_ARQUIVO = {'pdf'}
 
 app = Flask(__name__)
 
-client_id = "apptestegovbr"
-client_secret = "lHbfJhktrIzQybBKvDAE"
+client_id = ""
+client_secret = ""
 redirect_uri ='http://127.0.0.1:5000/callback'
 scope = 'sign'
 authorization_base_url = 'https://cas.staging.iti.br/oauth2.0/authorize'
