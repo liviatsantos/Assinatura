@@ -1,5 +1,5 @@
 from requests_oauthlib import OAuth2Session
-from flask import Flask, request, redirect, session, render_template
+from flask import Flask, request, redirect, session, render_template, send_file
 import os
 import requests
 from urllib.parse import urlparse,  parse_qs
@@ -24,13 +24,15 @@ def index():
     return render_template('index.html')
 
 @app.route('/assinar', methods=['POST'])
-def salvar_arquivo():
+def ler_arquivo():
     if 'file' in request.files:
         file = request.files['file']
         if file and arquivo_permitido(file.filename):
             pdf_bytes = file.read()
+            nome_arquivo = file.filename
             hashbase64 = base64.b64encode(hashlib.sha256(pdf_bytes).digest())
             session['hash'] = hashbase64.decode()
+            session['nome_arquivo'] = nome_arquivo.replace('.pdf','.p7s')
     return redirect('/logar')
 
 @app.route("/logar")
@@ -55,12 +57,20 @@ def callback():
     payload = json.dumps({'hashBase64': hash_assinatura })
     headers = {'Content-Type': 'application/json', 'Authorization':'Bearer ' + at["access_token"]}
     response = requests.post(url, headers=headers, data=payload, stream=True)
-    
-    #salva arquivo assinatura na pasta do projeto
-    with open('response.p7s', 'wb') as arquivo_assinatura:
-        arquivo_assinatura.write(response.raw.read())
-        arquivo_assinatura.close
-    return render_template('index.html', assinado=True)
+    if response.ok:
+        #salva arquivo assinatura na pasta do projeto
+        nome_arquivo = session['nome_arquivo']      
+        with open(file=nome_arquivo, mode='wb') as arquivo_assinatura:
+            arquivo_assinatura.write(response.raw.read())
+            arquivo_assinatura.close
+        return render_template('index.html', assinado=True)
+    else:
+        return render_template('index.html', assinado=False)
+
+@app.route("/download")
+def download():
+    nome_arquivo = session['nome_arquivo']
+    return send_file(path_or_file=nome_arquivo, download_name=nome_arquivo, as_attachment = True)
 
 def arquivo_permitido(filename):
     return '.' in filename and \
